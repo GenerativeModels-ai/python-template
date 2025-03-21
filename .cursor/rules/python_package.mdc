@@ -1,0 +1,126 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Description: Rules for a modern, well-structured Python package
+# File patterns: **/*.py
+
+## 🏗️ General Structure
+- All Python modules should be inside a `src/` directory following the `src` layout.
+- Package must have an `__init__.py` file inside its main module.
+- Use a `pyproject.toml` file for configuration (PEP 518 compliant).
+
+## 🛠️ Type Annotations & Typing (PEP 484)
+- All functions, methods, and class attributes **must** be type-annotated.
+- Use `mypy` for type checking.
+- When defining complex types, prefer `TypedDict` and `dataclasses.dataclass`.
+- Avoid using `Any`, unless strictly necessary.
+
+```python
+from typing import List, Dict, Optional
+
+def add_numbers(a: int, b: int) -> int:
+    return a + b
+```
+
+## 🧹 Code Formatting & Linting
+- Use `black` for auto-formatting (line length **88**).
+- Use `isort` for import sorting (`black` profile).
+- Use `ruff` for linting (fast alternative to `flake8`).
+- Use `pre-commit` hooks to enforce formatting and linting.
+
+```toml
+[tool.black]
+line-length = 88
+
+[tool.isort]
+profile = "black"
+```
+
+## ✅ Testing & Coverage
+- Use `pytest` as the main testing framework.
+- All tests should be inside a `tests/` directory.
+- Aim for **100% test coverage** using `pytest-cov`.
+- Use `hypothesis` for property-based testing.
+
+```python
+import pytest
+
+def test_example():
+    assert 2 + 2 == 4
+```
+
+## 📦 Dependency Management
+- Use `poetry` or `pip-tools` for dependency management.
+- `requirements.txt` should be generated from `poetry.lock` or `requirements.in`.
+- Pin dependencies in `pyproject.toml`.
+
+```toml
+[tool.poetry.dependencies]
+python = "^3.10"
+numpy = "^1.23"
+```
+
+## 🏗️ CI/CD Best Practices
+- Use GitHub Actions with a `python-ci.yml` workflow.
+- Ensure `pytest` runs on every push and pull request.
+- Automatically format code using `pre-commit` hooks.
+- Publish to PyPI using `poetry publish` or `twine`.
+
+```yaml
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run tests
+        run: pytest --cov=my_package
+```
+
+## 🔍 Documentation & Docstrings
+- Follow **PEP 257** for docstrings.
+- Use `pdoc` or `mkdocs` for generating documentation.
+- Ensure every public function and class has a docstring.
+- Use **Google-style docstrings**.
+
+```python
+def multiply(a: int, b: int) -> int:
+    """Multiplies two numbers.
+
+    Args:
+        a (int): First number.
+        b (int): Second number.
+
+    Returns:
+        int: The result of multiplication.
+    """
+    return a * b
+```
+
+## 📊 Logging & Error Handling
+- Use `structlog` or `logging` with structured logs.
+- Handle exceptions properly and avoid catching generic `Exception`.
+- Use `rich` for colored output in CLI applications.
+
+```python
+import structlog
+
+log = structlog.get_logger()
+
+try:
+    result = 10 / 0
+except ZeroDivisionError as e:
+    log.error("Math error", error=str(e))
+```
+
+## 🚀 Performance Optimizations
+- Use `asyncio` where applicable.
+- Avoid unnecessary loops and prefer generator expressions.
+- Profile code using `cProfile` or `py-spy` when necessary.
+
+## 📜 Licensing & Metadata
+- Ensure a `LICENSE` file is present (e.g., MIT, Apache 2.0).
+- `pyproject.toml` should include author and project metadata.
+- Use `tox` for multi-version testing.

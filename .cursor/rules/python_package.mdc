@@ -52,15 +52,42 @@ def test_example():
 ```
 
 ## 📦 Dependency Management
-- Use `poetry` or `pip-tools` for dependency management.
-- `requirements.txt` should be generated from `poetry.lock` or `requirements.in`.
-- Pin dependencies in `pyproject.toml`.
+- Use `uv` for dependency management and installation
+- Define all dependencies in `pyproject.toml`
+- Use `uv`'s lockfile feature for deterministic builds (it creates `.uv/lock.json`)
 
 ```toml
-[tool.poetry.dependencies]
-python = "^3.10"
-numpy = "^1.23"
+[project]
+name = "your-package"
+version = "0.1.0"
+dependencies = [
+    "numpy>=1.23",
+    "pandas>=2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "uv>=0.1.0",
+    "pytest>=7.0",
+    "black>=23.0",
+    "ruff>=0.1.0",
+]
 ```
+
+Example installation commands:
+```bash
+# Install for development
+uv pip install -e ".[dev]"
+
+# Install production dependencies
+uv pip install .
+
+# Update dependencies and regenerate lockfile
+uv pip sync
+```
+```
+
+The previous version was mixing concepts from older pip-based workflows. `uv` handles dependency resolution and locking on its own, so there's no need for separate requirements files. The `pyproject.toml` is sufficient for defining dependencies, and `uv` will handle the rest, including creating and maintaining its own lockfile.
 
 ## 🏗️ CI/CD Best Practices
 - Use GitHub Actions with a `python-ci.yml` workflow.

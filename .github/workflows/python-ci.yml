@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  test:
+  setup:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -21,29 +21,61 @@ jobs:
         run: |
           curl -LsSf https://astral.sh/uv/install.sh | sh
 
+      - name: Cache virtual environment
+        uses: actions/cache@v3
+        with:
+          path: .venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('**/pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-venv-
+
       - name: Create venv and install dependencies
         run: |
           uv venv
           source .venv/bin/activate
           uv pip install -e ".[dev]"
 
+  quality:
+    needs: setup
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        task: [test, format, lint, typecheck]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Restore virtual environment
+        uses: actions/cache@v3
+        with:
+          path: .venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('**/pyproject.toml') }}
+
       - name: Run tests
+        if: matrix.task == 'test'
         run: |
           source .venv/bin/activate
-          pytest --cov=pubkit
+          pytest --cov=mypackage
 
       - name: Check formatting
+        if: matrix.task == 'format'
         run: |
           source .venv/bin/activate
-          black . --check
           ruff format . --check
 
       - name: Run ruff
+        if: matrix.task == 'lint'
         run: |
           source .venv/bin/activate
           ruff check .
 
       - name: Type check
+        if: matrix.task == 'typecheck'
         run: |
           source .venv/bin/activate
-          mypy src/pubkit
+          mypy src/mypackage

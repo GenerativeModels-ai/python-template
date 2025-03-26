@@ -1,11 +1,11 @@
-"""Core functionality for pubkit."""
-from typing import str
+"""Core functionality for mypackage."""
 
 
 def hello() -> str:
     """Return a hello message.
-    
+
     Returns:
         str: A greeting message
     """
-    return "Hello from pubkit!" 
+
+    return "Hello from mypackage!"

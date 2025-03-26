@@ -1,0 +1,6 @@
+--bind
+--container-architecture linux/amd64
+--use-gitignore
+--artifact-server-path /tmp/artifacts
+--env-file .env
+--secret-file .secrets
